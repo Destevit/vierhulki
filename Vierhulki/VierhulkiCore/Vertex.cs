@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace VierhulkiCore
 {
-    public class Class1
+    public class Vertex
     {
+        public List<Vertex> NextVertexes { get; set; }
     }
 }
