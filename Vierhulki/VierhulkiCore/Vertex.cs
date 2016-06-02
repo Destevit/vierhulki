@@ -8,6 +8,6 @@ namespace VierhulkiCore
 {
     public class Vertex
     {
-        public List<Vertex> NextVertexes { get; set; }
+        public List<Vertex> NextVertexes { get; set; } = new List<Vertex>();
     }
 }
