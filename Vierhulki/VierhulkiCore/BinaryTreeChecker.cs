@@ -8,25 +8,31 @@ namespace VierhulkiCore
 {
     public class BinaryTreeChecker
     {
-        List<Vertex> visited = new List<Vertex>();
-
-        public bool Check(Vertex w)
+        static public bool Check(Vertex v)
         {
-            Boolean isbinary = true;
-            visited.Add(w);
-            foreach (var item in w.NextVertexes)
+            Vertex parent = v;
+            List<Vertex> visited = new List<Vertex>();
+            bool isbinary = true;
+            visited.Add(v);
+            foreach (var item in v.NextVertexes)
             {
-                if (w.NextVertexes.Count > 3)
+
+                if (v.NextVertexes.Count > 3)
                 {
                     isbinary = false;
                 }
-                if (!w.NextVertexes.Contains(item))
+                if (visited.Contains(item))
                 {
-                    Check(item);
+                    if (!(item == parent))
+                    {
+                        isbinary = false;
+                    }
+
                 }
-            }            
-          return isbinary;
-            Console.WriteLine(isbinary);
+                BinaryTreeChecker.Check(item);
+
+            }
+            return isbinary;
         }
     }
 }
