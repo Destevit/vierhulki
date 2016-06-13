@@ -20,12 +20,13 @@ namespace ConsoleApplication1
             Vertex v7 = new Vertex();
             Vertex v8 = new Vertex();
 
-            v1.NextVertexes = new List<Vertex>() { v1, v2, v5 };
+            v1.NextVertexes = new List<Vertex>() { v2, v5 };
             v2.NextVertexes = new List<Vertex>() { v1, v8, v3 };
 
             bool spr = BinaryTreeChecker.Check(v1);
+
             Console.WriteLine(spr);
         }
         }
     }
-}
+

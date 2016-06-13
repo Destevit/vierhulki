@@ -10,29 +10,23 @@ namespace VierhulkiCore
     {
         static public bool Check(Vertex v)
         {
-            Vertex parent = v;
-            List<Vertex> visited = new List<Vertex>();
-            bool isbinary = true;
-            visited.Add(v);
-            foreach (var item in v.NextVertexes)
+            Vertex current = v;
+            Queue<Vertex> kolejka = new Queue<Vertex>();
+            kolejka.Enqueue(current);
+            do
             {
-
-                if (v.NextVertexes.Count > 3)
+                current = kolejka.Dequeue();
+                foreach (var next in current.NextVertexes)
                 {
-                    isbinary = false;
-                }
-                if (visited.Contains(item))
-                {
-                    if (!(item == parent))
+                    kolejka.Enqueue(next);
+                    if (current.NextVertexes.Count > 3)
                     {
-                        isbinary = false;
+                        return false;
                     }
-
                 }
-                BinaryTreeChecker.Check(item);
+            } while (kolejka.Count!=0);
+            return true;
 
-            }
-            return isbinary;
-        }
+        }   
     }
 }
