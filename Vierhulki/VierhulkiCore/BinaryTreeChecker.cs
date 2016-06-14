@@ -18,7 +18,7 @@ namespace VierhulkiCore
             {
                 current = kolejka.Dequeue();
                 visited.Add(current);
-                Console.WriteLine(current);
+                
                 foreach (var next in current.NextVertexes)
                 {
                     if (!visited.Contains(next))
