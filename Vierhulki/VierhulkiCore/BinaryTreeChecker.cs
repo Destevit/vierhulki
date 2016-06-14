@@ -12,17 +12,25 @@ namespace VierhulkiCore
         {
             Vertex current = v;
             Queue<Vertex> kolejka = new Queue<Vertex>();
+            List<Vertex> visited = new List<Vertex>();
             kolejka.Enqueue(current);
             do
             {
                 current = kolejka.Dequeue();
+                visited.Add(current);
+                Console.WriteLine(current);
                 foreach (var next in current.NextVertexes)
                 {
-                    kolejka.Enqueue(next);
-                    if (current.NextVertexes.Count > 3)
+                    if (!visited.Contains(next))
                     {
-                        return false;
+                        kolejka.Enqueue(next);
+                        if (current.NextVertexes.Count > 3)
+                        {
+                            return false;
+                        }
+
                     }
+                    
                 }
             } while (kolejka.Count!=0);
             return true;
