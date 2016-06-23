@@ -31,18 +31,20 @@ namespace VierhulkiGui
     public partial class MainWindow : Window
     {
         DataTable matrix; BackgroundWorker bw;
-        BinaryTreeChecker<GuiVertex, GuiEdge> btc = new BinaryTreeChecker<GuiVertex, GuiEdge>();
-        List<GuiEdge> edges;
+        BinaryTreeChecker<GuiVertex, GuiEdge> btc;
+        List<GuiEdge> edges = new List<GuiEdge>();
+        List<GuiVertex> vertices = new List<GuiVertex>();
+        GuiGraph graph;
         public MainWindow()
         {
             InitializeComponent();
+            graph = new GuiGraph();
             SetupArea();
-            Loaded += MainWindow_Loaded;
         }
 
         private void SetupArea()
         {
-            var logicCore = new GuiGXLogicCore { Graph = createGraph() };
+            var logicCore = new GuiGXLogicCore { Graph = graph };
             logicCore.DefaultLayoutAlgorithm = LayoutAlgorithmTypeEnum.KK;
             logicCore.DefaultLayoutAlgorithmParams = logicCore.AlgorithmFactory.CreateLayoutParameters(LayoutAlgorithmTypeEnum.KK);
             ((KKLayoutParameters)logicCore.DefaultLayoutAlgorithmParams).MaxIterations = 100;
@@ -54,48 +56,43 @@ namespace VierhulkiGui
             Area.LogicCore = logicCore;
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private void generateGraph()
         {
+            graph.Clear();
+            graph.AddVertexRange(vertices);
+            graph.AddEdgeRange(edges);
             Area.GenerateGraph(true, true);
             Zoom.ZoomToFill();
-        }
-
-        private GuiGraph createGraph()
-        {
-            GuiGraph graph = new GuiGraph();
-
-            GuiVertex[] vertices = new GuiVertex[5];
-            edges = new List<GuiEdge>();
-
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                vertices[i] = new GuiVertex();
-            }
-            edges.Add(new GuiEdge(vertices[0], vertices[1]));
-            edges.Add(new GuiEdge(vertices[0], vertices[2]));
-            edges.Add(new GuiEdge(vertices[1], vertices[3]));
-            edges.Add(new GuiEdge(vertices[1], vertices[4]));
-            edges.Add(new GuiEdge(vertices[1], vertices[0]));
-            edges.Add(new GuiEdge(vertices[2], vertices[0]));
-            edges.Add(new GuiEdge(vertices[3], vertices[1]));
-            edges.Add(new GuiEdge(vertices[4], vertices[1]));
-            graph.AddVerticesAndEdgeRange(edges);
-
-            return graph;
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
             if (bw == null)
             {
+                btc = new BinaryTreeChecker<GuiVertex, GuiEdge>();
                 bw = new BackgroundWorker();
                 btc.EdgeChecking += Btc_EdgeChecking;
+                btc.CheckingFailed += Btc_CheckingFailed;
                 bw.DoWork += Bw_DoWork;
                 bw.WorkerReportsProgress = true;
                 bw.ProgressChanged += Bw_ProgressChanged;
+                bw.RunWorkerCompleted += Bw_RunWorkerCompleted;
             }
             if (!bw.IsBusy)
-                bw.RunWorkerAsync();
+                bw.RunWorkerAsync(directional.IsChecked.GetValueOrDefault());
+        }
+
+        private void Btc_CheckingFailed(object sender, CheckingFailedEventArgs e)
+        {
+            bw.ReportProgress(2, e);
+        }
+
+        private void Bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if((bool)e.Result == true)
+            {
+                info.Content = "Graf jest drzewem binarnym";
+            }
         }
 
         private void Bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -106,15 +103,25 @@ namespace VierhulkiGui
                 Area.EdgesList[(GuiEdge)e.UserState].Foreground = Brushes.Blue;
                 Area.VertexList[(GuiVertex)(((GuiEdge)e.UserState).From)].Foreground = Brushes.Blue;
             }
-            else
+            else if(e.ProgressPercentage == 1)
             {
                 Area.EdgesList[(GuiEdge)e.UserState].Foreground = Brushes.Black;
+            }
+            else
+            {
+                CheckingFailedEventArgs cfea = (CheckingFailedEventArgs)e.UserState;
+                if (cfea.FailedVertex != null)
+                    Area.VertexList[(GuiVertex)cfea.FailedVertex].Foreground = Brushes.Red;
+                if (cfea.FailedEdge != null)
+                    Area.EdgesList[(GuiEdge)cfea.FailedEdge].Foreground = Brushes.Red;
+                info.Content = cfea.Message;
             }
         }
 
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            btc.Check(edges[0].From, edges, false);
+            bool result = btc.Check(edges[0].From, edges, (bool)e.Argument);
+            e.Result = result;
         }
 
         private void Btc_EdgeChecking(object sender, EdgeCheckingEventArgs e)
@@ -150,7 +157,7 @@ namespace VierhulkiGui
             {
                 for (int i = 0; i < size; i++)
                 {
-                    dt.Columns.Add(i.ToString());
+                    dt.Columns.Add((i+1).ToString());
                 }
                 for (int i = 0; i < size; i++)
                 {
@@ -167,8 +174,27 @@ namespace VierhulkiGui
             Grid.Items.Refresh();
             if (AlgorithmTab != null && AlgorithmTab.IsSelected)
             {
-                matrix = ((DataView)Grid.ItemsSource).ToTable();
-                MessageBox.Show(matrix.Rows[2][2].ToString());
+                vertices.Clear();
+                edges.Clear();
+                matrix = ((DataView)Grid.ItemsSource)?.ToTable();
+                if (matrix == null) return;
+                int size = matrix.Columns.Count;
+                GuiVertex[] _vertices = new GuiVertex[size];
+
+                for (int i = 0; i < size; i++)
+                {
+                    _vertices[i] = new GuiVertex();
+                }
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        if (matrix.Rows[i][j].ToString() == "1")
+                            edges.Add(new GuiEdge(_vertices[i], _vertices[j]));
+                    }
+                }
+                vertices.AddRange(_vertices);
+                generateGraph();
             }
         }
 

@@ -15,7 +15,7 @@
                     <TextBox x:Name="matrixSize" Height="23" TextWrapping="Wrap" Width="120" PreviewTextInput="matrixSize_PreviewTextInput"/>
                     <Button x:Name="ok" Content="OK" Margin="10" Width="75" Click="ok_Click"/>
                 </StackPanel>
-                <DataGrid x:Name="Grid" PreviewTextInput="Grid_PreviewTextInput">
+                <DataGrid x:Name="Grid" PreviewTextInput="Grid_PreviewTextInput" CanUserAddRows="False">
                 </DataGrid>
             </StackPanel>
         </TabItem>
@@ -25,9 +25,30 @@
                     <local:GuiGraphArea x:Name="Area"/>
                 </graph:ZoomControl>
                 <Button x:Name="button" Content="Uruchom" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+                <CheckBox x:Name="directional" Margin="10,30,0,0" Content="drzewo skierowane?" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Label x:Name="info"  VerticalAlignment="Bottom" Content="..."/>
             </Grid>
         </TabItem>
         <TabItem Header="Opis">
+            <TextBlock Margin="10" TextWrapping="WrapWithOverflow" TextAlignment="Justify">
+                Aplikacja sprawdza czy wprowadzony graf jest drzewem binarnym z wykorzystaniem zmodyfikowanego
+                algorytmu przeszukiwania wszerz.
+                <LineBreak/>
+                <LineBreak/>
+                Za korzeń uznawany jest wierzchołek nr 1.
+                <LineBreak/>
+                <LineBreak/>
+                Rozróżnia grafy skierowane i nieskierowane.
+                Krawędź nieskierowana jest równoważna dwóm krawędziom skierowanym o przeciwnych zwrotach.
+                <LineBreak/>
+                <LineBreak/>
+                Autorzy:<LineBreak/>
+                Rafał Niewiński<LineBreak/>
+                Damian Rutkiewicz<LineBreak/>
+                Dominik Ostrowski<LineBreak/>
+                <LineBreak/>
+                W projekcie użyto biblioteki GraphX (z GraphVitz, Graph#) oraz WPF.
+            </TextBlock>
         </TabItem>
     </TabControl>
 </Window>
