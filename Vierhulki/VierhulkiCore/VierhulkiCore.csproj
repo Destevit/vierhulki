@@ -40,9 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="GraphCreator.cs" />
+    <Compile Include="Edge.cs" />
     <Compile Include="BinaryTreeChecker.cs" />
+    <Compile Include="IEdge.cs" />
+    <Compile Include="IVertex.cs" />
     <Compile Include="Vertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

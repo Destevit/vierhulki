@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace VierhulkiCore
 {
-    public class Vertex
+    public class Vertex : IVertex
     {
-        public List<Vertex> NextVertexes { get; set; } = new List<Vertex>();
+        private static long _ID = 0;
+        public Vertex()
+        {
+            ID = _ID++;
+        }
+        public long ID { get; private set; }
+        public override string ToString()
+        {
+            return ID.ToString();
+        }
     }
 }

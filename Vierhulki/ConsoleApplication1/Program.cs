@@ -11,23 +11,60 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            Vertex v1 = new Vertex();
-            Vertex v2 = new Vertex();
-            Vertex v3 = new Vertex();
-            Vertex v4 = new Vertex();
-            Vertex v5 = new Vertex();
-            Vertex v6 = new Vertex();
-            Vertex v7 = new Vertex();
-            Vertex v8 = new Vertex();
+            Vertex[] vertices = new Vertex[5];
+            List<Edge> edges = new List<Edge>();
 
-            v1.NextVertexes = new List<Vertex>() { v2, v5 };
-            v2.NextVertexes = new List<Vertex>() { v1, v8, v3};
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = new Vertex();
+            }
+            edges.Add(new Edge(vertices[0], vertices[1]));
+            edges.Add(new Edge(vertices[0], vertices[2]));
+            edges.Add(new Edge(vertices[1], vertices[3]));
+            edges.Add(new Edge(vertices[1], vertices[4]));
+            edges.Add(new Edge(vertices[1], vertices[0]));
+            edges.Add(new Edge(vertices[2], vertices[0]));
+            edges.Add(new Edge(vertices[3], vertices[1]));
+            edges.Add(new Edge(vertices[4], vertices[1]));
 
-            bool spr = BinaryTreeChecker.Check(v1);
+            BinaryTreeChecker<Vertex, Edge> btc = new BinaryTreeChecker<Vertex, Edge>();
 
-            Console.WriteLine(spr);
+            btc.VertexChecking += Btc_VertexChecking;
+            btc.EdgeChecking += Btc_EdgeChecking;
+            btc.CheckingFailed += Btc_CheckingFailed;
+
+            Console.WriteLine(btc.Check(vertices[0], edges, false));
+            
             Console.ReadKey();
         }
+
+        private static void Btc_CheckingFailed(object sender, CheckingFailedEventArgs e)
+        {
+            if (e != null)
+            {
+                if (e.FailedVertex != null)
+                {
+                    Console.WriteLine("Zepsuty wierzchołek: " + e.FailedVertex.ID);
+                }
+                if (e.FailedEdge != null)
+                {
+                    Console.WriteLine("Zepsuta krawędź {0} -> {1}", e.FailedEdge.From.ID, e.FailedEdge.To.ID);
+                }
+                Console.WriteLine("Z powodu: " + e.Message);
+            }
+        }
+
+        private static void Btc_EdgeChecking(object sender, EdgeCheckingEventArgs e)
+        {
+            if (e != null)
+            {
+                Console.WriteLine("Sprawdzanie krawędzi od {0} do {1}", e.EdgeChecked.From.ID, e.EdgeChecked.To.ID);
+            }
+        }
+
+        private static void Btc_VertexChecking(object sender, VertexCheckingEventArgs e)
+        {
+            Console.WriteLine("Sprawdzanie wierzchołka {0}", e.VertexChecked.ID);
         }
     }
-
+}
