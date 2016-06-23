@@ -110,11 +110,18 @@ namespace VierhulkiGui
             else
             {
                 CheckingFailedEventArgs cfea = (CheckingFailedEventArgs)e.UserState;
+                string where = "";
                 if (cfea.FailedVertex != null)
+                {
                     Area.VertexList[(GuiVertex)cfea.FailedVertex].Foreground = Brushes.Red;
+                    where = "w. " + cfea.FailedVertex.ID;
+                }
                 if (cfea.FailedEdge != null)
+                {
                     Area.EdgesList[(GuiEdge)cfea.FailedEdge].Foreground = Brushes.Red;
-                info.Content = cfea.Message;
+                    where = "k. " + cfea.FailedEdge.From.ID + "->" + cfea.FailedEdge.To.ID;
+                }
+                info.Content = cfea.Message + (where == "" ? "" : (" (" + where + ")"));
             }
         }
 
